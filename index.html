@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>丸子的小世界 🐱</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+      background: #FAF7F5;
+      color: #5D4E46;
+      overflow-x: hidden;
+      cursor: none;
+    }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #FAF7F5; }
+    ::-webkit-scrollbar-thumb { background: #C4D4D9; border-radius: 4px; }
+
+    /* ── Custom Cat Cursor ── */
+    .cat-cursor {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      font-size: 28px;
+      transform: translate(-50%, -50%);
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.12));
+      will-change: transform;
+      transition: opacity 0.2s;
+    }
+    .cat-cursor .shadow-paw {
+      position: absolute;
+      bottom: -4px;
+      right: -6px;
+      font-size: 16px;
+      opacity: 0.35;
+      animation: pawSway 1.5s ease-in-out infinite;
+    }
+    @keyframes pawSway {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(2px, -3px) rotate(8deg); }
+    }
+
+    /* ── Floating Paw Prints ── */
+    .floating-paw {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.08;
+      font-size: 32px;
+      animation: pawDrift linear infinite;
+      filter: blur(0.5px);
+    }
+    @keyframes pawDrift {
+      0%   { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.05; }
+      25%  { transform: translate(18px, -22px) rotate(15deg) scale(1.15); opacity: 0.12; }
+      50%  { transform: translate(-10px, -38px) rotate(-8deg) scale(0.9); opacity: 0.07; }
+      75%  { transform: translate(14px, -18px) rotate(10deg) scale(1.08); opacity: 0.10; }
+      100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.05; }
+    }
+
+    /* ── Bow Decorations ── */
+    .bow-deco {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.06;
+      font-size: 40px;
+      animation: bowFloat 8s ease-in-out infinite;
+    }
+    @keyframes bowFloat {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-12px) rotate(3deg); }
+    }
+
+    /* ── Floating Clouds ── */
+    .cloud {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.10;
+      animation: cloudDrift linear infinite;
+    }
+    .cloud svg { width: 100%; height: 100%; }
+    @keyframes cloudDrift {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(calc(100vw + 30%)); }
+    }
+
+    /* ── Corner Sparkle ── */
+    .sparkle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1;
+      font-size: 18px;
+      opacity: 0.07;
+      animation: sparkleTwinkle 4s ease-in-out infinite;
+    }
+    @keyframes sparkleTwinkle {
+      0%, 100% { opacity: 0.04; transform: scale(0.8) rotate(0deg); }
+      50% { opacity: 0.12; transform: scale(1.2) rotate(180deg); }
+    }
+
+    /* ── Navbar ── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(0);
+      background: transparent;
+    }
+    .navbar.scrolled {
+      background: rgba(250, 247, 245, 0.92);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 4px 30px rgba(170, 180, 185, 0.12);
+    }
+    .nav-link {
+      position: relative;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 2.5px;
+      background: linear-gradient(90deg, #B5CDD6, #C2D6C8);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link.active::after { width: 100%; }
+
+    /* ── Carousel Decorative Background ── */
+    .carousel-bg-pattern {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .carousel-bg-pattern .cb-paw {
+      position: absolute;
+      opacity: 0.08;
+      font-size: 28px;
+      animation: cbFloat 6s ease-in-out infinite;
+    }
+    @keyframes cbFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.06; }
+      50% { transform: translateY(-8px) rotate(8deg); opacity: 0.12; }
+    }
+    .carousel-bg-pattern .cb-star {
+      position: absolute;
+      opacity: 0.07;
+      font-size: 16px;
+      animation: cbTwinkle 4s ease-in-out infinite;
+    }
+    @keyframes cbTwinkle {
+      0%, 100% { opacity: 0.04; transform: scale(0.8) rotate(0deg); }
+      50% { opacity: 0.12; transform: scale(1.3) rotate(180deg); }
+    }
+    .carousel-bg-pattern .cb-heart {
+      position: absolute;
+      opacity: 0.06;
+      font-size: 20px;
+      animation: cbHeart 5s ease-in-out infinite;
+    }
+    @keyframes cbHeart {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.05; }
+      50% { transform: translateY(-6px) scale(1.1); opacity: 0.10; }
+    }
+
+    /* ── Carousel (full image, no crop) ── */
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(181, 205, 214, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(168, 196, 181, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 50% 20%, rgba(232, 196, 184, 0.08) 0%, transparent 40%),
+        linear-gradient(135deg, #F0F4F5 0%, #E8ECEE 50%, #EEF0F0 100%);
+    }
+    .carousel-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(181, 205, 214, 0.12) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .carousel-track {
+      display: grid;
+      grid-template-areas: "stack";
+      position: relative;
+      z-index: 1;
+    }
+    .carousel-slide {
+      grid-area: stack;
+      width: 100%;
+      position: relative;
+      opacity: 0;
+      transition: opacity 1.0s ease-in-out;
+    }
+    .carousel-slide.active {
+      opacity: 1;
+    }
+    .carousel-slide .img-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-height: 72vh;
+      padding: 16px 20px;
+    }
+    .carousel-slide img {
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 68vh;
+      object-fit: contain;
+      display: block;
+      border-radius: 18px;
+      box-shadow:
+        0 12px 40px rgba(150, 170, 175, 0.22),
+        0 0 0 2px rgba(255, 255, 255, 0.6);
+      background:
+        linear-gradient(135deg, #FDFDFD 0%, #F5F7F7 100%);
+      padding: 8px;
+    }
+    .carousel-slide .img-deco {
+      position: absolute;
+      pointer-events: none;
+      z-index: 2;
+      font-size: 22px;
+      opacity: 0.15;
+    }
+    .carousel-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.05) 0%,
+        rgba(0,0,0,0.15) 50%,
+        rgba(0,0,0,0.45) 100%
+      );
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 2rem;
+    }
+    .carousel-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      z-index: 20;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,0.30);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.35);
+      color: #fff;
+      font-size: 1.2rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: none;
+      transition: all 0.3s ease;
+    }
+    .carousel-btn:hover {
+      background: rgba(255,255,255,0.50);
+      transform: translateY(-50%) scale(1.08);
+    }
+    .carousel-btn.prev { left: 20px; }
+    .carousel-btn.next { right: 20px; }
+    .carousel-dots {
+      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 12px; z-index: 20;
+    }
+    .carousel-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(255,255,255,0.40);
+      cursor: pointer;
+      transition: all 0.4s ease;
+      border: none;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+    }
+    .carousel-dot.active {
+      width: 30px; border-radius: 6px;
+      background: rgba(255,255,255,0.90);
+    }
+
+    /* ── Section titles with gradient animation ── */
+    .section-title {
+      font-size: 2rem; font-weight: 700;
+      text-align: center;
+      background: linear-gradient(135deg, #8CB5C9, #A8C4B5, #E8C4B8, #8CB5C9);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      display: inline-block;
+      animation: titleGradient 7s ease-in-out infinite;
+    }
+    @keyframes titleGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .section-title::after {
+      content: '🌸';
+      display: block;
+      font-size: 1rem;
+      margin-top: 6px;
+      -webkit-text-fill-color: initial;
+      opacity: 0.5;
+    }
+
+    /* ── Card hover float ── */
+    .float-card {
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1px solid rgba(180, 195, 200, 0.15);
+    }
+    .float-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 48px -12px rgba(150, 170, 175, 0.20);
+      border-color: rgba(180, 195, 200, 0.30);
+    }
+
+    /* ── Gallery ── */
+    .gallery-item {
+      overflow: hidden;
+      border-radius: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 16px rgba(160, 180, 185, 0.10);
+    }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.7s ease;
+    }
+    .gallery-item:hover img {
+      transform: scale(1.08);
+    }
+
+    /* ── Message board ── */
+    .msg-card {
+      animation: fadeUp 0.4s ease forwards;
+      opacity: 0;
+      border: 1px solid rgba(180, 195, 200, 0.12);
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Floating cat ── */
+    .floating-cat {
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+
+    /* ── Mobile nav ── */
+    .mobile-menu {
+      position: fixed; top: 0; right: -100%;
+      width: 75%; max-width: 320px; height: 100vh;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      box-shadow: -8px 0 30px rgba(0,0,0,0.06);
+      transition: right 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 200;
+      padding: 2rem;
+      display: flex; flex-direction: column; gap: 1.5rem;
+    }
+    .mobile-menu.open { right: 0; }
+    .menu-overlay {
+      position: fixed; inset: 0; z-index: 150;
+      background: rgba(0,0,0,0.20);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .menu-overlay.open { opacity: 1; pointer-events: auto; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .carousel-slide .img-wrap { max-height: 62vh; }
+      .carousel-slide img { max-height: 58vh; }
+      .cat-cursor { display: none; }
+      body { cursor: auto; }
+    }
+    @media (max-width: 640px) {
+      .carousel-slide .img-wrap { max-height: 57vh; padding: 10px 12px; }
+      .carousel-slide img { max-height: 53vh; }
+      .section-title { font-size: 1.5rem; }
+      .carousel-btn { width: 34px; height: 34px; font-size: 0.9rem; }
+      .carousel-btn.prev { left: 8px; }
+      .carousel-btn.next { right: 8px; }
+    }
+
+    /* ── Cat Petting Counter ── */
+    .petting-counter {
+      font-size: 4rem;
+      font-weight: 900;
+      display: inline-block;
+      transition: transform 0.15s ease;
+    }
+    .petting-counter.pop {
+      animation: counterPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes counterPop {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.4); }
+      70% { transform: scale(0.95); }
+      100% { transform: scale(1); }
+    }
+    .pet-btn {
+      cursor: none;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pet-btn:active {
+      transform: scale(0.92);
+    }
+    @media (max-width: 640px) {
+      .pet-btn { cursor: pointer; }
+      .petting-counter { font-size: 3rem; }
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #B5CDD6;
+      box-shadow: 0 0 0 3px rgba(181, 205, 214, 0.25);
+    }
+
+    /* ── Smooth section enter ── */
+    .section-enter {
+      opacity: 0; transform: translateY(30px);
+      transition: all 0.7s ease;
+    }
+    .section-enter.visible {
+      opacity: 1; transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ Floating Decorations ═══════════ -->
+<div class="decorations" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;">
+  <!-- Paw prints -->
+  <span class="floating-paw" style="bottom:10%;left:2%;animation-duration:24s;font-size:30px;"></span>
+  <span class="floating-paw" style="top:15%;left:1%;animation-duration:28s;font-size:22px;animation-delay:-6s;"></span>
+  <span class="floating-paw" style="top:35%;right:1%;animation-duration:26s;font-size:26px;animation-delay:-13s;"></span>
+  <span class="floating-paw" style="bottom:28%;right:3%;animation-duration:22s;font-size:20px;animation-delay:-4s;"></span>
+  <span class="floating-paw" style="top:55%;left:4%;animation-duration:30s;font-size:18px;animation-delay:-10s;"></span>
+  <span class="floating-paw" style="top:75%;left:8%;animation-duration:20s;font-size:24px;animation-delay:-18s;"></span>
+  <span class="floating-paw" style="top:8%;right:8%;animation-duration:26s;font-size:16px;animation-delay:-22s;"></span>
+  <span class="floating-paw" style="bottom:45%;right:1%;animation-duration:32s;font-size:20px;animation-delay:-8s;"></span>
+
+  <!-- Bow decorations -->
+  <span class="bow-deco" style="top:12%;left:6%;">🎀</span>
+  <span class="bow-deco" style="bottom:20%;right:5%;animation-delay:-3s;">🎀</span>
+  <span class="bow-deco" style="top:50%;left:2%;animation-delay:-5s;font-size:30px;">🎀</span>
+  <span class="bow-deco" style="top:25%;right:10%;animation-delay:-2s;font-size:28px;">🎀</span>
+  <span class="bow-deco" style="bottom:8%;left:15%;animation-delay:-7s;font-size:32px;">🎀</span>
+
+  <!-- Sparkles -->
+  <span class="sparkle" style="top:6%;left:12%;animation-delay:-1s;">✨</span>
+  <span class="sparkle" style="bottom:15%;right:10%;animation-delay:-3s;">✨</span>
+  <span class="sparkle" style="top:42%;right:6%;animation-delay:-5s;">✨</span>
+  <span class="sparkle" style="top:80%;left:5%;animation-delay:-2s;">✨</span>
+
+  <!-- Clouds -->
+  <span class="cloud" style="top:4%;left:-10%;animation-duration:55s;width:170px;">
+    <svg viewBox="0 0 200 100" fill="none"><ellipse cx="100" cy="60" rx="60" ry="30" fill="#C8DCE3"/><ellipse cx="65" cy="55" rx="35" ry="25" fill="#D6E6EC"/><ellipse cx="135" cy="55" rx="35" ry="25" fill="#D6E6EC"/><ellipse cx="85" cy="40" rx="30" ry="22" fill="#E0ECF0"/><ellipse cx="115" cy="40" rx="30" ry="22" fill="#E0ECF0"/></svg>
+  </span>
+  <span class="cloud" style="top:26%;left:-5%;animation-duration:65s;width:130px;animation-delay:-18s;">
+    <svg viewBox="0 0 200 100" fill="none"><ellipse cx="100" cy="60" rx="55" ry="28" fill="#C8DCE3"/><ellipse cx="70" cy="55" rx="30" ry="22" fill="#D6E6EC"/><ellipse cx="130" cy="55" rx="30" ry="22" fill="#D6E6EC"/><ellipse cx="90" cy="42" rx="25" ry="18" fill="#E0ECF0"/></svg>
+  </span>
+  <span class="cloud" style="top:52%;left:-8%;animation-duration:58s;width:145px;animation-delay:-10s;">
+    <svg viewBox="0 0 200 100" fill="none"><ellipse cx="100" cy="58" rx="50" ry="25" fill="#C8DCE3"/><ellipse cx="68" cy="52" rx="32" ry="22" fill="#D6E6EC"/><ellipse cx="132" cy="52" rx="32" ry="22" fill="#D6E6EC"/><ellipse cx="95" cy="38" rx="28" ry="20" fill="#E0ECF0"/></svg>
+  </span>
+  <span class="cloud" style="top:72%;left:-15%;animation-duration:50s;width:110px;animation-delay:-32s;">
+    <svg viewBox="0 0 200 100" fill="none"><ellipse cx="100" cy="62" rx="45" ry="22" fill="#C8DCE3"/><ellipse cx="72" cy="55" rx="28" ry="18" fill="#D6E6EC"/><ellipse cx="128" cy="55" rx="28" ry="18" fill="#D6E6EC"/></svg>
+  </span>
+</div>
+
+<!-- ═══════════ Custom Cursor ═══════════ -->
+<div class="cat-cursor" id="catCursor">🐱<span class="shadow-paw">🐾</span></div>
+
+<!-- ═══════════ Mobile Menu ═══════════ -->
+<div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <div class="flex justify-between items-center mb-6">
+    <span class="text-xl font-bold" style="color:#8CB5C9;">🐱 丸子</span>
+    <button onclick="toggleMenu()" class="text-2xl leading-none" style="color:#8B7D72;">✕</button>
+  </div>
+  <a href="#home" onclick="toggleMenu()" class="nav-link text-lg py-2" style="color:#5D4E46;">🏠 主页</a>
+  <a href="#profile" onclick="toggleMenu()" class="nav-link text-lg py-2" style="color:#5D4E46;">📋 猫猫档案</a>
+  <a href="#album" onclick="toggleMenu()" class="nav-link text-lg py-2" style="color:#5D4E46;">📸 日常相册</a>
+  <a href="#daily" onclick="toggleMenu()" class="nav-link text-lg py-2" style="color:#5D4E46;">🎭 趣味日常</a>
+  <a href="#pet" onclick="toggleMenu()" class="nav-link text-lg py-2" style="color:#5D4E46;">🖐️ 撸猫计数器</a>
+  <a href="#message" onclick="toggleMenu()" class="nav-link text-lg py-2" style="color:#5D4E46;">💬 留言板</a>
+</div>
+
+<!-- ═══════════ Navbar ═══════════ -->
+<nav class="navbar" id="navbar">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 sm:h-20">
+      <a href="#home" class="flex items-center gap-2 group">
+        <span class="text-2xl floating-cat">🐱</span>
+        <span class="text-xl sm:text-2xl font-bold" style="color:#5D4E46;">
+          丸子的小<span style="color:#8CB5C9;">世界</span>
+        </span>
+      </a>
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+        <a href="#home" class="nav-link active" style="color:#5D4E46;">主页</a>
+        <a href="#profile" class="nav-link" style="color:#8B7D72;">猫猫档案</a>
+        <a href="#album" class="nav-link" style="color:#8B7D72;">日常相册</a>
+        <a href="#daily" class="nav-link" style="color:#8B7D72;">趣味日常</a>
+        <a href="#pet" class="nav-link" style="color:#8B7D72;">撸猫</a>
+        <a href="#message" class="nav-link" style="color:#8B7D72;">留言板</a>
+      </div>
+      <button class="md:hidden text-2xl" onclick="toggleMenu()" style="color:#5D4E46;">☰</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════ 1. Hero Carousel (no crop — full image) ═══════════ -->
+<section id="home" class="carousel-container">
+  <!-- Decorative background elements -->
+  <div class="carousel-bg-pattern">
+    <span class="cb-paw" style="top:8%;left:5%;animation-delay:0s;">🐾</span>
+    <span class="cb-paw" style="top:15%;right:8%;animation-delay:-2s;font-size:22px;">🐾</span>
+    <span class="cb-paw" style="bottom:20%;left:10%;animation-delay:-4s;font-size:24px;">🐾</span>
+    <span class="cb-paw" style="bottom:30%;right:5%;animation-delay:-1s;font-size:20px;">🐾</span>
+    <span class="cb-paw" style="top:50%;left:3%;animation-delay:-5s;font-size:18px;">🐾</span>
+    <span class="cb-paw" style="top:65%;right:3%;animation-delay:-3s;font-size:26px;">🐾</span>
+    <span class="cb-star" style="top:6%;left:20%;animation-delay:-1s;">✨</span>
+    <span class="cb-star" style="top:25%;right:15%;animation-delay:-4s;">✨</span>
+    <span class="cb-star" style="bottom:10%;left:25%;animation-delay:-2s;">✨</span>
+    <span class="cb-star" style="bottom:40%;right:10%;animation-delay:-5s;">✨</span>
+    <span class="cb-heart" style="top:10%;left:40%;animation-delay:-1s;">🌸</span>
+    <span class="cb-heart" style="top:35%;right:5%;animation-delay:-4s;">🌺</span>
+    <span class="cb-heart" style="bottom:15%;left:5%;animation-delay:-3s;">🌸</span>
+    <span class="cb-heart" style="bottom:8%;right:18%;animation-delay:-6s;">🌺</span>
+    <span class="cb-heart" style="top:70%;left:12%;animation-delay:-2s;">🌸</span>
+  </div>
+  <div class="carousel-track">
+    <div class="carousel-slide active" data-index="0">
+      <div class="img-wrap">
+        <span class="img-deco" style="top:8px;left:14px;transform:rotate(-15deg);">🎀</span>
+        <span class="img-deco" style="bottom:8px;right:14px;transform:rotate(10deg);">🌸</span>
+        <img src="images/1.png" alt="丸子 01" />
+      </div>
+      <div class="carousel-overlay text-center">
+        <h1 class="text-2xl sm:text-4xl md:text-5xl font-black text-white mb-3 drop-shadow-lg" style="letter-spacing:0.05em;">
+          欢迎来到 <span style="color:#F5D0C0;">丸子</span> 的小世界
+        </h1>
+        <p class="text-sm sm:text-lg text-white/90 max-w-xl drop-shadow">一只热爱冒险、温柔又调皮的小猫咪 🐾</p>
+      </div>
+    </div>
+    <div class="carousel-slide" data-index="1">
+      <div class="img-wrap">
+        <span class="img-deco" style="top:8px;left:14px;transform:rotate(-15deg);">🌺</span>
+        <span class="img-deco" style="bottom:8px;right:14px;transform:rotate(10deg);">🐾</span>
+        <img src="images/2.png" alt="丸子 02" />
+      </div>
+      <div class="carousel-overlay text-center">
+        <h2 class="text-xl sm:text-3xl md:text-4xl font-black text-white mb-3 drop-shadow-lg">
+          每一天都是 <span style="color:#B5CDD6;">新的冒险</span>
+        </h2>
+        <p class="text-sm sm:text-lg text-white/90 max-w-xl drop-shadow">用爪子探索世界的每一个角落 🌍</p>
+      </div>
+    </div>
+    <div class="carousel-slide" data-index="2">
+      <div class="img-wrap">
+        <span class="img-deco" style="top:8px;left:14px;transform:rotate(-15deg);">🎀</span>
+        <span class="img-deco" style="bottom:8px;right:14px;transform:rotate(10deg);">🌺</span>
+        <img src="images/03.png" alt="丸子 03" />
+      </div>
+      <div class="carousel-overlay text-center">
+        <h2 class="text-xl sm:text-3xl md:text-4xl font-black text-white mb-3 drop-shadow-lg">
+          阳光、草地 &amp; <span style="color:#F5D0C0;">小确幸</span>
+        </h2>
+        <p class="text-sm sm:text-lg text-white/90 max-w-xl drop-shadow">午后暖阳里，打个滚儿就是全世界 ☀️</p>
+      </div>
+    </div>
+    <div class="carousel-slide" data-index="3">
+      <div class="img-wrap">
+        <span class="img-deco" style="top:8px;left:14px;transform:rotate(-15deg);">🌸</span>
+        <span class="img-deco" style="bottom:8px;right:14px;transform:rotate(10deg);">🎀</span>
+        <img src="images/04.png" alt="丸子 04" />
+      </div>
+      <div class="carousel-overlay text-center">
+        <h2 class="text-xl sm:text-3xl md:text-4xl font-black text-white mb-3 drop-shadow-lg">
+          和你一起的<span style="color:#B5CDD6;">温柔时光</span>
+        </h2>
+        <p class="text-sm sm:text-lg text-white/90 max-w-xl drop-shadow">愿每一个日子都有喵星人的陪伴 🐱💕</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="carousel-btn prev" onclick="changeSlide(-1)">‹</button>
+  <button class="carousel-btn next" onclick="changeSlide(1)">›</button>
+
+  <div class="carousel-dots">
+    <button class="carousel-dot active" data-index="0" onclick="goToSlide(0)" aria-label="第1张"></button>
+    <button class="carousel-dot" data-index="1" onclick="goToSlide(1)" aria-label="第2张"></button>
+    <button class="carousel-dot" data-index="2" onclick="goToSlide(2)" aria-label="第3张"></button>
+    <button class="carousel-dot" data-index="3" onclick="goToSlide(3)" aria-label="第4张"></button>
+  </div>
+</section>
+
+<!-- ═══════════ 2. 主页 Welcome ═══════════ -->
+<section class="py-16 sm:py-24 px-4" style="background: linear-gradient(180deg, #FAF7F5 0%, #F4F7F7 100%);">
+  <div class="max-w-4xl mx-auto text-center section-enter" id="welcomeSection">
+    <div class="inline-block mb-6">
+      <span class="text-6xl floating-cat">🐱</span>
+    </div>
+    <h2 class="section-title text-3xl sm:text-4xl mb-6">你好，我是丸子</h2>
+    <p class="text-base sm:text-lg leading-relaxed max-w-2xl mx-auto" style="color:#8B7D72; line-height:2;">
+      是一只热爱生活、钟情阳光的小猫咪。<br class="hidden sm:block" />
+      喜欢在窗台上看云卷云舒，在午后暖阳里打盹，<br class="hidden sm:block" />
+      也喜欢悄悄钻进纸箱，探索每一个角落的秘密。
+    </p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <span class="px-5 py-2 rounded-full text-sm" style="background:#EBF2F5; color:#5D4E46;">🐟 爱吃小鱼干</span>
+      <span class="px-5 py-2 rounded-full text-sm" style="background:#F5EDEA; color:#5D4E46;">☀️ 喜欢晒太阳</span>
+      <span class="px-5 py-2 rounded-full text-sm" style="background:#E8F0EC; color:#5D4E46;">📦 纸箱爱好者</span>
+      <span class="px-5 py-2 rounded-full text-sm" style="background:#F0EAF0; color:#5D4E46;">🧶 毛线球杀手</span>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="w-full h-1" style="background: linear-gradient(90deg, #C8DCE3, #D6DCD0, #E8D0C8, #D4C4C4);"></div>
+
+<!-- ═══════════ 3. 猫猫档案 ═══════════ -->
+<section id="profile" class="py-16 sm:py-24 px-4" style="background:#F4F7F7;">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12 section-enter" id="profileTitle">
+      <span class="text-4xl mb-4 block">📋</span>
+      <h2 class="section-title text-3xl sm:text-4xl">猫猫档案</h2>
+      <p class="mt-4" style="color:#8B7D72;">关于丸子的亿点点小秘密 ✨</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8 items-center section-enter" id="profileContent">
+      <div class="flex justify-center">
+        <div class="relative group">
+          <div class="w-64 h-64 sm:w-80 sm:h-80 rounded-[32px] overflow-hidden shadow-xl float-card" style="background:#FFFCF8;">
+            <img src="images/07.png" alt="丸子的照片" class="w-full h-full object-cover" />
+          </div>
+          <span class="absolute -bottom-3 -right-3 text-4xl floating-cat">🐾</span>
+          <span class="absolute -top-3 -left-3 text-3xl" style="opacity:0.3;transform:rotate(-15deg);">🎀</span>
+        </div>
+      </div>
+      <div class="space-y-5">
+        <div class="p-6 rounded-2xl float-card" style="background:#FFFCF8; box-shadow: 0 4px 20px rgba(160,180,185,0.08);">
+          <h3 class="text-2xl font-bold mb-4" style="color:#5D4E46;">🐱 丸子 <span style="font-size:0.8rem;opacity:0.5;">🎀</span></h3>
+          <div class="grid grid-cols-2 gap-3 text-sm">
+            <div><span class="font-medium">🎂 年龄</span><br /><span style="color:#8B7D72;">一岁零三个月</span></div>
+            <div><span class="font-medium">🧬 品种</span><br /><span style="color:#8B7D72;">银渐层</span></div>
+            <div><span class="font-medium">⚥ 性别</span><br /><span style="color:#8B7D72;">小王子 👑</span></div>
+            <div><span class="font-medium">❤️ 最爱零食</span><br /><span style="color:#8B7D72;">皇家猫罐头</span></div>
+          </div>
+        </div>
+        <div class="p-6 rounded-2xl float-card" style="background:#EBF2F5; box-shadow: 0 4px 20px rgba(160,180,185,0.08);">
+          <p class="text-sm leading-relaxed" style="color:#5D4E46;">
+            "喵呜～ 我叫丸子，是一只银渐层小猫咪。<br /><br />
+            我是一只偶尔捣乱的凑凑咪，在外面很安静听话，不怕陌生人，
+            还会坐长途汽车呢！生病打针也特别配合——总之我是一只天使小咪 🐱💕<br /><br />
+            最喜欢皇家猫罐头，一听到开罐的声音就会屁颠屁颠跑过来～"
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="w-full h-1" style="background: linear-gradient(90deg, #D4C4C4, #E8D0C8, #D6DCD0, #C8DCE3);"></div>
+
+<!-- ═══════════ 4. 日常相册 ═══════════ -->
+<section id="album" class="py-16 sm:py-24 px-4" style="background:#FFFCF8;">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12 section-enter" id="albumTitle">
+      <span class="text-4xl mb-4 block">📸</span>
+      <h2 class="section-title text-3xl sm:text-4xl">日常相册</h2>
+      <p class="mt-4" style="color:#8B7D72;">捕捉丸子的每一个可爱瞬间 🌟</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 section-enter" id="albumGrid">
+      <div class="gallery-item float-card aspect-square"><img src="images/06.png" alt="丸子日常 1" /></div>
+      <div class="gallery-item float-card aspect-square"><img src="images/07.png" alt="丸子日常 2" /></div>
+      <div class="gallery-item float-card aspect-square"><img src="images/08.png" alt="丸子日常 3" /></div>
+      <div class="gallery-item float-card aspect-square"><img src="images/09.png" alt="丸子日常 4" /></div>
+      <div class="gallery-item float-card aspect-square"><img src="images/1.png" alt="丸子日常 5" /></div>
+      <div class="gallery-item float-card aspect-square"><img src="images/2.png" alt="丸子日常 6" /></div>
+      <div class="gallery-item float-card aspect-square"><img src="images/03.png" alt="丸子日常 7" /></div>
+      <div class="gallery-item float-card aspect-square"><img src="images/04.png" alt="丸子日常 8" /></div>
+      <div class="gallery-item float-card aspect-square"><img src="images/05.png" alt="丸子日常 9" /></div>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="w-full h-1" style="background: linear-gradient(90deg, #C8DCE3, #D6DCD0, #E8D0C8, #D4C4C4);"></div>
+
+<!-- ═══════════ 5. 趣味日常 ═══════════ -->
+<section id="daily" class="py-16 sm:py-24 px-4" style="background:#F4F7F7;">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12 section-enter" id="dailyTitle">
+      <span class="text-4xl mb-4 block">🎭</span>
+      <h2 class="section-title text-3xl sm:text-4xl">趣味日常</h2>
+      <p class="mt-4" style="color:#8B7D72;">丸子の每一天都精彩纷呈 ✨</p>
+    </div>
+
+    <div class="space-y-8" id="dailyPosts">
+      <article class="float-card rounded-3xl overflow-hidden flex flex-col md:flex-row" style="background:#FFFCF8; box-shadow: 0 4px 20px rgba(160,180,185,0.08);">
+        <div class="md:w-2/5 h-60 md:h-auto overflow-hidden">
+          <img src="images/06.png" alt="纸箱探险" class="w-full h-full object-cover" />
+        </div>
+        <div class="p-6 md:p-8 md:w-3/5 flex flex-col justify-center">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs px-3 py-1 rounded-full" style="background:#EBF2F5; color:#8CB5C9;">2025.08.15</span>
+            <span class="text-xs" style="color:#C8DCE3;">|</span>
+            <span class="text-xs" style="color:#8B7D72;">📦 纸箱系列</span>
+          </div>
+          <h3 class="text-xl font-bold mb-2" style="color:#5D4E46;">是纸箱哎！</h3>
+          <p class="text-sm leading-relaxed" style="color:#8B7D72;">
+            今天突然一个超级大的纸箱，丸子以迅雷不及掩耳之势钻了进去，
+            别的小茂密在小箱子里面可是会变成小耄耋的哎，还是我小丸子又乖又可爱吧。
+            但是小主人你为什么要偷拍我的丑照啊喂T^T～ 📦🐱
+          </p>
+        </div>
+      </article>
+
+      <article class="float-card rounded-3xl overflow-hidden flex flex-col md:flex-row-reverse" style="background:#FFFCF8; box-shadow: 0 4px 20px rgba(160,180,185,0.08);">
+        <div class="md:w-2/5 h-60 md:h-auto overflow-hidden">
+          <img src="images/09.png" alt="午后阳光" class="w-full h-full object-cover" />
+        </div>
+        <div class="p-6 md:p-8 md:w-3/5 flex flex-col justify-center">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs px-3 py-1 rounded-full" style="background:#F5EDEA; color:#E8C4B8;">2025.08.10</span>
+            <span class="text-xs" style="color:#C8DCE3;">|</span>
+            <span class="text-xs" style="color:#8B7D72;">☀️ 阳光系列</span>
+          </div>
+          <h3 class="text-xl font-bold mb-2" style="color:#5D4E46;">是手机，咪也要玩</h3>
+          <p class="text-sm leading-relaxed" style="color:#8B7D72;">
+            小主人的新手机到了，
+            我得记住他的样子，到时候偷过来玩玩。
+            但是，你抢不过咪你信吗～ ☀️😌
+          </p>
+        </div>
+      </article>
+
+      <article class="float-card rounded-3xl overflow-hidden flex flex-col md:flex-row" style="background:#FFFCF8; box-shadow: 0 4px 20px rgba(160,180,185,0.08);">
+        <div class="md:w-2/5 h-60 md:h-auto overflow-hidden">
+          <img src="images/08.png" alt="逗猫棒时光" class="w-full h-full object-cover" />
+        </div>
+        <div class="p-6 md:p-8 md:w-3/5 flex flex-col justify-center">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs px-3 py-1 rounded-full" style="background:#E8F0EC; color:#A8C4B5;">2025.08.05</span>
+            <span class="text-xs" style="color:#C8DCE3;">|</span>
+            <span class="text-xs" style="color:#8B7D72;">🎯 玩耍系列</span>
+          </div>
+          <h3 class="text-xl font-bold mb-2" style="color:#5D4E46;">浴衣の诱惑</h3>
+          <p class="text-sm leading-relaxed" style="color:#8B7D72;">
+            我爱洗澡，皮肤好好，噢噢噢
+            洗香香的小猫，你敢和他对视十秒吗
+            嘿嘿嘿！
+            全天下最可爱的小茂密正是在下！木嘿嘿嘿😽 🎯🐾
+          </p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="w-full h-1" style="background: linear-gradient(90deg, #D4C4C4, #E8D0C8, #D6DCD0, #C8DCE3);"></div>
+
+<!-- ═══════════ 6. 撸猫计数器 ═══════════ -->
+<section id="pet" class="py-16 sm:py-24 px-4" style="background:#FAF7F5;">
+  <div class="max-w-3xl mx-auto text-center section-enter" id="petSection">
+    <span class="text-4xl mb-4 block">🖐️</span>
+    <h2 class="section-title text-3xl sm:text-4xl">撸猫计数器</h2>
+    <p class="mt-4 mb-2" style="color:#8B7D72;">希望大家来撸小猫丸子！</p>
+    <p class="text-sm mb-8" style="color:#B5CDD6;">戳一下图片就是撸了一次哦～</p>
+
+    <!-- Click-to-pet image -->
+    <div class="flex justify-center mb-6">
+      <div class="pet-btn relative inline-block" onclick="petCat()">
+        <div class="w-48 h-48 sm:w-56 sm:h-56 rounded-[28px] overflow-hidden shadow-xl float-card" style="background:#FFFCF8; border: 2px solid rgba(255,255,255,0.6);">
+          <img src="images/10.png" alt="快来撸我" class="w-full h-full object-cover" />
+        </div>
+        <!-- Floating "撸" label -->
+        <span class="absolute -top-2 -right-2 text-sm px-3 py-1 rounded-full font-bold text-white" style="background: linear-gradient(135deg, #F5C6A0, #E8C4B8); box-shadow: 0 2px 8px rgba(200,150,130,0.3);">撸我 🖐️</span>
+      </div>
+    </div>
+
+    <!-- Wash button -->
+    <div class="flex justify-center mb-4">
+      <button onclick="bathCat()" class="pet-btn inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium text-white transition-all duration-300 hover:scale-105 active:scale-95" style="background: linear-gradient(135deg, #B5CDD6, #8CB5C9); box-shadow: 0 2px 10px rgba(140,181,201,0.25);">
+        🛁 洗香香咯
+      </button>
+    </div>
+
+    <!-- Counter display -->
+    <div class="mb-2">
+      <span class="text-sm" style="color:#8B7D72;">已被撸了</span>
+      <span class="petting-counter" id="petCount" style="color:#8CB5C9;">0</span>
+      <span class="text-sm" style="color:#8B7D72;">次</span>
+    </div>
+
+    <!-- Fun messages -->
+    <p id="petMsg" class="text-sm mt-3" style="color:#B5CDD6;">还没有人撸过丸子呢，快来当第一个吧～ 🥺</p>
+
+    <!-- Counter footer -->
+    <div class="mt-6 flex justify-center gap-3 text-xs" style="color:#C8DCE3;">
+      <span>🐾 撸猫有益身心健康</span>
+      <span>🌸 建议每天多撸几次</span>
+      <span>🐱 丸子说谢谢你</span>
+    </div>
+  </div>
+</section>
+
+<!-- Divider -->
+<div class="w-full h-1" style="background: linear-gradient(90deg, #C8DCE3, #D6DCD0, #E8D0C8, #D4C4C4);"></div>
+
+<!-- ═══════════ 7. 留言板 ═══════════ -->
+<section id="message" class="py-16 sm:py-24 px-4" style="background:#FFFCF8;">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-12 section-enter" id="msgTitle">
+      <span class="text-4xl mb-4 block">💬</span>
+      <h2 class="section-title text-3xl sm:text-4xl">留言板</h2>
+      <p class="mt-4" style="color:#8B7D72;">给丸子留个言吧，他超喜欢看评语的！💕</p>
+    </div>
+
+    <div class="section-enter" id="msgForm">
+      <div class="p-6 sm:p-8 rounded-3xl mb-8 float-card" style="background:#F4F7F7; box-shadow: 0 4px 20px rgba(160,180,185,0.08);">
+        <div class="grid sm:grid-cols-2 gap-4 mb-4">
+          <input type="text" id="msgName" placeholder="你的名字（或喵名）" maxlength="20"
+            class="w-full px-5 py-3 rounded-xl border-0 text-sm" style="background:#FFFCF8; color:#5D4E46;" />
+          <input type="text" id="msgTitle_input" placeholder="标题（选填）" maxlength="30"
+            class="w-full px-5 py-3 rounded-xl border-0 text-sm" style="background:#FFFCF8; color:#5D4E46;" />
+        </div>
+        <textarea id="msgContent" rows="4" placeholder="想对丸子说什么呢～" maxlength="500"
+          class="w-full px-5 py-3 rounded-xl border-0 text-sm resize-none mb-4" style="background:#FFFCF8; color:#5D4E46;"></textarea>
+        <button onclick="postMessage()"
+          class="px-8 py-3 rounded-xl text-white font-medium text-sm transition-all duration-300 hover:scale-105 active:scale-95"
+          style="background: linear-gradient(135deg, #A8C4B5, #8CB5C9);">
+          ✨ 发布留言
+        </button>
+      </div>
+
+      <div id="messageList" class="space-y-4"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ Footer ═══════════ -->
+<footer class="py-12 px-4" style="background: linear-gradient(135deg, #EBF2F5, #F4F7F7);">
+  <div class="max-w-4xl mx-auto text-center">
+    <div class="text-5xl mb-4 floating-cat">🐱</div>
+    <p class="text-base sm:text-xl font-bold mb-3" style="color:#5D4E46;">
+      🎀 丸子的小世界 · 用爱记录每一个喵星瞬间 🎀
+    </p>
+    <p class="text-xs sm:text-sm" style="color:#B5CDD6;">
+      &copy; 2025 丸子的小世界 | 愿所有小猫都被温柔以待 💕
+    </p>
+    <div class="mt-6 flex justify-center gap-5 text-2xl" style="color:#C8DCE3;">
+      <span>🐟</span>
+      <span>🎀</span>
+      <span>🧶</span>
+      <span>☀️</span>
+      <span>🌸</span>
+      <span>🌙</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════ JavaScript ═══════════ -->
+<script>
+// ─── Carousel ───
+const slides = document.querySelectorAll('.carousel-slide');
+const dots = document.querySelectorAll('.carousel-dot');
+let currentSlide = 0;
+let autoTimer;
+
+function showSlide(index) {
+  slides.forEach((s, i) => s.classList.toggle('active', i === index));
+  dots.forEach((d, i) => d.classList.toggle('active', i === index));
+  currentSlide = index;
+}
+
+function changeSlide(dir) {
+  let next = currentSlide + dir;
+  if (next < 0) next = slides.length - 1;
+  if (next >= slides.length) next = 0;
+  showSlide(next);
+  resetAuto();
+}
+
+function goToSlide(index) {
+  showSlide(index);
+  resetAuto();
+}
+
+function resetAuto() {
+  clearInterval(autoTimer);
+  autoTimer = setInterval(() => changeSlide(1), 5500);
+}
+
+autoTimer = setInterval(() => changeSlide(1), 5500);
+
+// ─── Navbar scroll ───
+const navbar = document.getElementById('navbar');
+const navLinks = document.querySelectorAll('.nav-link');
+
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+  const sections = ['home','profile','album','daily','pet','message'];
+  let current = 'home';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && window.scrollY >= el.offsetTop - 200) current = id;
+  });
+  navLinks.forEach(link => {
+    const href = link.getAttribute('href');
+    link.classList.toggle('active', href === '#' + current);
+    link.style.color = (href === '#' + current) ? '#5D4E46' : (link.closest('.mobile-menu') ? '#5D4E46' : '#8B7D72');
+  });
+});
+
+// ─── Mobile menu ───
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.getElementById('menuOverlay').classList.toggle('open');
+}
+
+// ─── Scroll reveal ───
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.section-enter').forEach(el => observer.observe(el));
+
+// ─── Custom Cat Cursor ───
+const catCursor = document.getElementById('catCursor');
+let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+
+document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+
+function animateCursor() {
+  cursorX += (mouseX - cursorX) * 0.15;
+  cursorY += (mouseY - cursorY) * 0.15;
+  catCursor.style.left = cursorX + 'px';
+  catCursor.style.top = cursorY + 'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+document.addEventListener('mouseleave', () => { catCursor.style.opacity = '0'; });
+document.addEventListener('mouseenter', () => { catCursor.style.opacity = '1'; });
+document.addEventListener('mousedown', () => { catCursor.style.transform = 'translate(-50%, -50%) rotate(-12deg) scale(0.9)'; });
+document.addEventListener('mouseup', () => { catCursor.style.transform = 'translate(-50%, -50%) rotate(0deg) scale(1)'; });
+
+// ─── Cat Petting Counter ───
+let petCount = parseInt(localStorage.getItem('wanziPetCount') || '0');
+const petDisplay = document.getElementById('petCount');
+const petMsg = document.getElementById('petMsg');
+const petMessages = [
+  '🥺 还没有人撸过丸子呢，快来当第一个吧～',
+  '🥰 有人来了！丸子的肚皮已准备好！',
+  '😊 手法不错！丸子发出咕噜咕噜声～',
+  '😌 丸子舒服地翻了个身，继续！',
+  '😍 撸得丸子都迷糊了～再来再来！',
+  '🥹 丸子的灵魂已经升天了……太舒服了……',
+  '🤩 撸猫大师！丸子宣布你是最佳铲屎官！',
+  '😻 丸子爱你！永远不要停！',
+  '✨ 你已经把丸子撸成了一张猫饼……',
+  '🌟 猫饼又变成了猫毯……再撸就要消失了！',
+  '🎉 恭喜！你已经把丸子撸到了异次元空间！'
+];
+
+function updatePetDisplay() {
+  petDisplay.textContent = petCount;
+  petDisplay.classList.remove('pop');
+  void petDisplay.offsetWidth; // force reflow
+  petDisplay.classList.add('pop');
+  localStorage.setItem('wanziPetCount', String(petCount));
+  // Fun message
+  const idx = Math.min(Math.ceil(petCount / 5), petMessages.length - 1);
+  petMsg.textContent = petMessages[idx];
+  petMsg.style.color = petCount === 0 ? '#B5CDD6' : '#8CB5C9';
+}
+
+function petCat() {
+  petCount++;
+  updatePetDisplay();
+}
+
+function bathCat() {
+  if (petCount === 0) {
+    petMsg.textContent = '丸子已经是香香的了，不用洗啦～ 🛁✨';
+    petMsg.style.color = '#B5CDD6';
+    return;
+  }
+  petCount = 0;
+  updatePetDisplay();
+  petMsg.textContent = '🛁 洗完澡澡，丸子又变回香香的小猫咪啦！';
+  petMsg.style.color = '#B5CDD6';
+  // Splash animation on the button
+  const btn = event.target;
+  btn.textContent = '🛁 洗香香咯 ✨';
+  setTimeout(() => { btn.textContent = '🛁 洗香香咯'; }, 1000);
+}
+
+updatePetDisplay();
+
+// ─── Message Board ───
+function loadMessages() {
+  const msgs = JSON.parse(localStorage.getItem('wanziMessages') || '[]');
+  const list = document.getElementById('messageList');
+  if (msgs.length === 0) {
+    list.innerHTML = `
+      <div class="text-center py-12 rounded-3xl" style="background:#F4F7F7;">
+        <span class="text-4xl block mb-3">💭</span>
+        <p style="color:#B5CDD6;">还没有留言呢，快来给丸子留言吧～</p>
+      </div>
+    `;
+    return;
+  }
+  list.innerHTML = msgs.slice().reverse().map((m, i) => `
+    <div class="msg-card p-5 sm:p-6 rounded-2xl float-card" style="background:#F4F7F7; animation-delay:${i*0.05}s;">
+      <div class="flex justify-between items-start mb-2">
+        <div class="flex items-center gap-2">
+          <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
+            style="background: linear-gradient(135deg, #A8C4B5, #8CB5C9);">${escHtml(m.name.charAt(0))}</span>
+          <span class="font-medium text-sm" style="color:#5D4E46;">${escHtml(m.name)}</span>
+        </div>
+        <span class="text-xs" style="color:#B5CDD6;">${m.time}</span>
+      </div>
+      ${m.title ? `<h4 class="font-medium text-sm mb-1" style="color:#5D4E46;">${escHtml(m.title)}</h4>` : ''}
+      <p class="text-sm leading-relaxed" style="color:#8B7D72;">${escHtml(m.content)}</p>
+    </div>
+  `).join('');
+}
+
+function postMessage() {
+  const name = document.getElementById('msgName').value.trim() || '匿名小猫咪';
+  const title = document.getElementById('msgTitle_input').value.trim();
+  const content = document.getElementById('msgContent').value.trim();
+  if (!content) { alert('写点内容再发嘛～'); return; }
+  const msgs = JSON.parse(localStorage.getItem('wanziMessages') || '[]');
+  msgs.push({
+    name, title, content,
+    time: new Date().toLocaleString('zh-CN', { year:'numeric',month:'2-digit',day:'2-digit', hour:'2-digit',minute:'2-digit' })
+  });
+  localStorage.setItem('wanziMessages', JSON.stringify(msgs));
+  document.getElementById('msgTitle_input').value = '';
+  document.getElementById('msgContent').value = '';
+  loadMessages();
+}
+
+function escHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+loadMessages();
+</script>
+</body>
+</html>
